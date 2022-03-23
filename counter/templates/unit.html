@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+{% load static %}
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="Luna, video monitoring, camera surveillance, cloud solution">
+    <meta name="description" content="Luna is a powerful monitoring system.">
+    <meta name="robots" content="noindex,nofollow">
+    <title>Luna</title>
+    <!-- Favicon icon -->
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'assets/images/favicon.png' %}">
+    <!-- This page plugin CSS -->
+    <link href="{% static 'assets/extra-libs/datatables.net-bs4/css/dataTables.bootstrap4.css' %}" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="{% static 'dist/css/style.min.css' %}" rel="stylesheet">
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+</head>
+
+<body>
+    <style type="text/css">
+        #overlay{ 
+          position: fixed;
+          top: 0;
+          z-index: 100;
+          width: 100%;
+          height:100%;
+          display: none;
+          background: rgba(0,0,0,0.6);
+        }
+        .cv-spinner {
+          height: 100%;
+          display: flex;
+          justify-content: center;
+          align-items: center;  
+        }
+        .spinner {
+          width: 40px;
+          height: 40px;
+          border: 4px #ddd solid;
+          border-top: 4px #2e93e6 solid;
+          border-radius: 50%;
+          animation: sp-anime 0.8s infinite linear;
+        }
+        @keyframes sp-anime {
+          100% { 
+            transform: rotate(360deg); 
+          }
+        }
+        .is-hide{
+          display:none;
+        }
+    </style>
+
+    <div id="overlay">
+      <div class="cv-spinner">
+        <span class="spinner"></span>
+      </div>
+    </div>
+    <!-- -------------------------------------------------------------- -->
+    <!-- Preloader - style you can find in spinners.css -->
+    <!-- -------------------------------------------------------------- -->
+    <!-- -------------------------------------------------------------- -->
+    <!-- Main wrapper - style you can find in pages.scss -->
+    <!-- -------------------------------------------------------------- -->
+    <div id="main-wrapper">
+        <!-- -------------------------------------------------------------- -->
+        <!-- Topbar header - style you can find in pages.scss -->
+        <!-- -------------------------------------------------------------- -->
+        <header class="topbar">
+            <nav class="navbar top-navbar navbar-expand-md navbar-dark">
+                <div class="navbar-header">
+                    <!-- This is for the sidebar toggle which is visible on mobile only -->
+                    <a class="nav-toggler waves-effect waves-light d-block d-md-none" href="javascript:void(0)"><i
+                            class="ti-menu ti-close"></i></a>
+                    <!-- ============================================================== -->
+                    <!-- Logo -->
+                    <!-- ============================================================== -->
+                    <a class="navbar-brand" href="{% url 'dashboard' %}">
+                        <!-- Logo icon -->
+                        <b class="logo-icon">
+                            <!--You can put here icon as well // <i class="wi wi-sunset"></i> //-->
+                            <!-- Dark Logo icon -->
+                            <img src="{% static 'assets/images/logo-icon.png' %}" alt="homepage" class="dark-logo" />
+                            <!-- Light Logo icon -->
+                            <img src="{% static 'assets/images/logo-light-icon.png' %}" alt="homepage" class="light-logo" />
+                        </b>
+                        <!--End Logo icon -->
+                        <!-- Logo text -->
+                        <span class="logo-text">
+                            <!-- dark Logo text -->
+                            <img src="{% static 'assets/images/logo-text.png' %}" alt="homepage" class="dark-logo" />
+                            <!-- Light Logo text -->
+                            <img src="{% static 'assets/images/logo-light-text.png' %}" class="light-logo" alt="homepage" />
+                        </span>
+                    </a>
+                    <!-- ============================================================== -->
+                    <!-- End Logo -->
+                    <!-- ============================================================== -->
+                    <!-- ============================================================== -->
+                    <!-- Toggle which is visible on mobile only -->
+                    <!-- ============================================================== -->
+                    <a class="topbartoggler d-block d-md-none waves-effect waves-light" href="javascript:void(0)"
+                        data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><i
+                            class="ti-more"></i></a>
+                </div>
+                <!-- ============================================================== -->
+                <!-- End Logo -->
+                <!-- ============================================================== -->
+                <div class="navbar-collapse collapse" id="navbarSupportedContent">
+                    <!-- ============================================================== -->
+                    <!-- toggle and nav items -->
+                    <!-- ============================================================== -->
+                    <ul class="navbar-nav me-auto">
+                        <!-- This is  -->
+                        <li class="nav-item"> <a
+                                class="nav-link sidebartoggler d-none d-md-block waves-effect waves-dark"
+                                href="javascript:void(0)"><i class="ti-menu"></i></a> </li>
+                        <!-- ============================================================== -->
+                        <!-- Search -->
+                        <!-- ============================================================== -->
+                        <li class="nav-item d-none d-md-block search-box"> <a
+                                class="nav-link d-none d-md-block waves-effect waves-dark" href="javascript:void(0)"><i
+                                    class="ti-search"></i></a>
+                            <form class="app-search">
+                                <input type="text" class="form-control" placeholder="Search & enter"> 
+                                <a class="srh-btn"><i class="ti-close"></i></a> 
+                                <a class="form-control text-center search" href="#">
+                                    <i class="ti-search"></i> Search by keyword</a>
+                            </form>
+                        </li>
+                    </ul>
+                    <!-- ============================================================== -->
+                    <!-- Right side toggle and nav items -->
+                    <!-- ============================================================== -->
+                    <ul class="navbar-nav">
+                        <!-- ============================================================== -->
+                        <!-- Comment -->
+                        <!-- ============================================================== -->
+                        <li class="nav-item ">
+                            <a class="nav-link waves-effect waves-dark"  href="{% url 'logout' %}" aria-haspopup="true" aria-expanded="false"> LogOut <i class="mdi mdi-logout"></i>
+                                <div class="notify"> <span class="heartbit"></span> <span class="point"></span> </div>
+                            </a>
+                        </li>
+                        <!-- ============================================================== -->
+                        <!-- End Comment -->
+                        <!-- ============================================================== -->
+                        <!-- ============================================================== -->
+                        <!-- Profile -->
+                        <!-- ============================================================== -->
+
+                    </ul>
+                </div>
+            </nav>
+        </header>
+        <!-- -------------------------------------------------------------- -->
+        <!-- End Topbar header -->
+        <!-- -------------------------------------------------------------- -->
+        <!-- -------------------------------------------------------------- -->
+        <!-- Left Sidebar - style you can find in sidebar.scss  -->
+        <!-- -------------------------------------------------------------- -->
+        <aside class="left-sidebar">
+            <!-- Sidebar scroll-->
+            <div class="scroll-sidebar">
+                <!-- Sidebar navigation-->
+                <nav class="sidebar-nav">
+                    <ul id="sidebarnav">
+                        <li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark sidebar-link"
+                                href="{% url 'dashboard' %}" aria-expanded="false"><i class="mdi mdi-gauge"></i><span
+                                    class="hide-menu">Dashboard</span></a></li>                        
+                        <li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark sidebar-link"
+                                href="{% url 'shop' %}" aria-expanded="false"><i class="mdi mdi-home"></i><span
+                                    class="hide-menu">Shop</span></a></li>           
+                        <li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark sidebar-link"
+                                href="{% url 'machine' %}" aria-expanded="false"><i class="mdi mdi-washing-machine"></i><span
+                                    class="hide-menu">Machine</span></a></li>          
+                        <li class="sidebar-item selected"> <a class="sidebar-link waves-effect waves-dark sidebar-link"
+                                href="{% url 'unit' %}" aria-expanded="false"><i class="mdi mdi-table"></i><span
+                                    class="hide-menu">Unit</span></a></li>
+                        <li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark sidebar-link"
+                                href="{% url 'data' %}" aria-expanded="false"><i class="mdi mdi-database"></i><span
+                                    class="hide-menu">Data</span></a></li>               
+                    </ul>
+                </nav>
+                <!-- End Sidebar navigation -->
+            </div>
+            <!-- End Sidebar scroll-->
+        </aside>
+        <!-- -------------------------------------------------------------- -->
+        <!-- End Left Sidebar - style you can find in sidebar.scss  -->
+        <!-- -------------------------------------------------------------- -->
+        <!-- -------------------------------------------------------------- -->
+        <!-- Page wrapper  -->
+        <!-- -------------------------------------------------------------- -->
+        <div class="page-wrapper">
+            <!-- -------------------------------------------------------------- -->
+            <!-- Container fluid  -->
+            <!-- -------------------------------------------------------------- -->
+            <div class="container-fluid">
+
+                <div class="row mb-4">
+                    <div class="col-md-4 col-12 align-self-center">
+                        <div class="col-md-5 col-12 align-self-center mb-4">
+                            <h3 class="text-themecolor mb-0">Unit List</h3>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-12">
+                        <div class="input-group mb-3">
+                            <button type="button" class="btn btn-info">
+                                <i class="text-white"></i>Shop</button>
+                            <input type="text" class="form-control shop">
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-12 align-self-center d-none d-md-block">
+                        <div class="input-group mb-3">
+                            <button type="button" class="btn btn-info">
+                                <i class="text-white"></i>Machine</button>
+                            <input type="text" class="form-control machine">
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-12 align-self-center d-none d-md-block">
+                        <div class="input-group mb-3">
+                            <button type="button" class="btn btn-info">
+                                <i class="text-white"></i>Unit</button>
+                            <input type="text" class="form-control unit">
+                        </div>
+                    </div>
+
+                </div>
+                <div class="card card-body">
+                    <p>Get Total <span class="total_unit" style="color: red; font-weight: bolder;">0</span> rows</p>
+                    <div class="table-responsive">
+                        <table class="table search-table v-middle">
+                            <thead class="header-item">
+                                <th>No.</th>
+                                <th>shop</th>
+                                <th>machine</th>
+                                <th>unit</th>
+                                <th>ps</th>
+                                <th>date</th>
+                            </thead>
+                            <tbody></tbody>
+
+                        </table>
+                    </div>
+                
+
+                <style type="text/css">
+                
+                    #pagination-demo{
+                        display: inline-block;
+                        margin-bottom: 1.75em;
+                        text-align: right;
+                        margin-right: 1.75em;
+                    }
+                    #pagination-demo li{
+                        display: inline-block;
+                    }
+
+                    .page-content{
+                        background: #eee;
+                        display: inline-block;
+                        padding: 10px;
+                        width: 100%;
+                        max-width: 660px;
+                    }
+
+                    .pagination {
+                        border-top: 0px solid #e3e3e3 !important;
+                        border-bottom: 0px solid #e3e3e3 !important;
+                    }
+
+                    .pagination .next, .pagination .prev, .pagination .first, .pagination .last {
+                        position: unset !important;
+                    }
+
+                </style>
+
+                <ul id="pagination-demo" class="pagination-sm"></ul>
+
+                
+                </div>
+
+
+            </div>
+            <!-- -------------------------------------------------------------- -->
+        </div>
+        <!-- -------------------------------------------------------------- -->
+        <!-- End Page wrapper  -->
+        <!-- -------------------------------------------------------------- -->
+    </div>
+    <!-- -------------------------------------------------------------- -->
+    <!-- End Wrapper -->
+    <!-- -------------------------------------------------------------- -->
+    <!-- -------------------------------------------------------------- -->
+    <!-- customizer Panel -->
+    <!-- -------------------------------------------------------------- -->
+    <aside class="customizer">
+        <a href="javascript:void(0)" class="service-panel-toggle"><i class="fa fa-spin fa-cog"></i></a>
+        <div class="customizer-body">
+            <div class="tab-content" id="pills-tabContent">
+                <!-- Tab 1 -->
+                <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+                    <div class="p-3 border-bottom">
+                        <!-- Sidebar -->
+                        <h5 class="font-weight-medium mb-2 mt-2">Layout Settings</h5>
+                        <div class="form-check mt-3">
+                            <input type="checkbox" name="theme-view" class="form-check-input" id="theme-view">
+                            <label class="form-check-label" for="theme-view"> <span>Dark Theme</span> </label>
+                        </div>
+                        <div class="form-check mt-2">
+                            <input type="checkbox" class="sidebartoggler form-check-input" name="collapssidebar"
+                                id="collapssidebar">
+                            <label class="form-check-label" for="collapssidebar"> <span>Collapse Sidebar</span> </label>
+                        </div>
+                        <div class="form-check mt-2">
+                            <input type="checkbox" name="sidebar-position" class="form-check-input"
+                                id="sidebar-position">
+                            <label class="form-check-label" for="sidebar-position"> <span>Fixed Sidebar</span> </label>
+                        </div>
+                        <div class="form-check mt-2">
+                            <input type="checkbox" name="header-position" class="form-check-input" id="header-position">
+                            <label class="form-check-label" for="header-position"> <span>Fixed Header</span> </label>
+                        </div>
+                        <div class="form-check mt-2">
+                            <input type="checkbox" name="boxed-layout" class="form-check-input" id="boxed-layout">
+                            <label class="form-check-label" for="boxed-layout"> <span>Boxed Layout</span> </label>
+                        </div>
+                    </div>
+                    <div class="p-3 border-bottom">
+                        <!-- Logo BG -->
+                        <h5 class="font-weight-medium mb-2 mt-2">Logo Backgrounds</h5>
+                        <ul class="theme-color m-0 p-0">
+                            <li class="theme-item list-inline-item me-1"><a href="javascript:void(0)"
+                                    class="theme-link rounded-circle d-block" data-logobg="skin1"></a></li>
+                            <li class="theme-item list-inline-item me-1"><a href="javascript:void(0)"
+                                    class="theme-link rounded-circle d-block" data-logobg="skin2"></a></li>
+                            <li class="theme-item list-inline-item me-1"><a href="javascript:void(0)"
+                                    class="theme-link rounded-circle d-block" data-logobg="skin3"></a></li>
+                            <li class="theme-item list-inline-item me-1"><a href="javascript:void(0)"
+                                    class="theme-link rounded-circle d-block" data-logobg="skin4"></a></li>
+                            <li class="theme-item list-inline-item me-1"><a href="javascript:void(0)"
+                                    class="theme-link rounded-circle d-block" data-logobg="skin5"></a></li>
+                            <li class="theme-item list-inline-item me-1"><a href="javascript:void(0)"
+                                    class="theme-link rounded-circle d-block" data-logobg="skin6"></a></li>
+                        </ul>
+                        <!-- Logo BG -->
+                    </div>
+                    <div class="p-3 border-bottom">
+                        <!-- Navbar BG -->
+                        <h5 class="font-weight-medium mb-2 mt-2">Navbar Backgrounds</h5>
+                        <ul class="theme-color m-0 p-0">
+                            <li class="theme-item list-inline-item me-1"><a href="javascript:void(0)"
+                                    class="theme-link rounded-circle d-block" data-navbarbg="skin1"></a></li>
+                            <li class="theme-item list-inline-item me-1"><a href="javascript:void(0)"
+                                    class="theme-link rounded-circle d-block" data-navbarbg="skin2"></a></li>
+                            <li class="theme-item list-inline-item me-1"><a href="javascript:void(0)"
+                                    class="theme-link rounded-circle d-block" data-navbarbg="skin3"></a></li>
+                            <li class="theme-item list-inline-item me-1"><a href="javascript:void(0)"
+                                    class="theme-link rounded-circle d-block" data-navbarbg="skin4"></a></li>
+                            <li class="theme-item list-inline-item me-1"><a href="javascript:void(0)"
+                                    class="theme-link rounded-circle d-block" data-navbarbg="skin5"></a></li>
+                            <li class="theme-item list-inline-item me-1"><a href="javascript:void(0)"
+                                    class="theme-link rounded-circle d-block" data-navbarbg="skin6"></a></li>
+                        </ul>
+                        <!-- Navbar BG -->
+                    </div>
+                    <div class="p-3 border-bottom">
+                        <!-- Logo BG -->
+                        <h5 class="font-weight-medium mb-2 mt-2">Sidebar Backgrounds</h5>
+                        <ul class="theme-color m-0 p-0">
+                            <li class="theme-item list-inline-item me-1"><a href="javascript:void(0)"
+                                    class="theme-link rounded-circle d-block" data-sidebarbg="skin1"></a></li>
+                            <li class="theme-item list-inline-item me-1"><a href="javascript:void(0)"
+                                    class="theme-link rounded-circle d-block" data-sidebarbg="skin2"></a></li>
+                            <li class="theme-item list-inline-item me-1"><a href="javascript:void(0)"
+                                    class="theme-link rounded-circle d-block" data-sidebarbg="skin3"></a></li>
+                            <li class="theme-item list-inline-item me-1"><a href="javascript:void(0)"
+                                    class="theme-link rounded-circle d-block" data-sidebarbg="skin4"></a></li>
+                            <li class="theme-item list-inline-item me-1"><a href="javascript:void(0)"
+                                    class="theme-link rounded-circle d-block" data-sidebarbg="skin5"></a></li>
+                            <li class="theme-item list-inline-item me-1"><a href="javascript:void(0)"
+                                    class="theme-link rounded-circle d-block" data-sidebarbg="skin6"></a></li>
+                        </ul>
+                        <!-- Logo BG -->
+                    </div>
+                </div>
+                <!-- End Tab 1 -->
+            </div>
+        </div>
+    </aside>
+    <!-- -------------------------------------------------------------- -->
+    <!-- All Jquery -->
+    <!-- -------------------------------------------------------------- -->
+    <script src="{% static 'assets/libs/jquery/dist/jquery.min.js' %}"></script>
+    <!-- Bootstrap tether Core JavaScript -->
+    <script src="{% static 'assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
+    <!-- apps -->
+    <script src="{% static 'dist/js/app.min.js' %}"></script>
+    <script src="{% static 'dist/js/app.init.js' %}"></script>
+    <script src="{% static 'dist/js/app-style-switcher.js' %}"></script>
+    <!-- slimscrollbar scrollbar JavaScript -->
+    <script src="{% static 'assets/libs/perfect-scrollbar/dist/perfect-scrollbar.jquery.min.js' %}"></script>
+    <script src="{% static 'assets/extra-libs/sparkline/sparkline.js' %}"></script>
+    <!--Wave Effects -->
+    <script src="{% static 'dist/js/waves.js' %}"></script>
+    <!--Menu sidebar -->
+    <script src="{% static 'dist/js/sidebarmenu.js' %}"></script>
+    <!--Custom JavaScript -->
+    <script src="{% static 'dist/js/feather.min.js' %}"></script>
+    <script src="{% static 'dist/js/custom.min.js' %}"></script>
+    <script src="{% static 'dist/js/jquery.twbsPagination.min.js' %}"></script>
+    <!--This page plugins -->
+    <!-- <script src="{% static 'dist/js/pages/contact/contact.js' %}"></script> -->
+
+    <script type="text/javascript">
+        
+        var checkedItems = [];
+
+        $(function(){
+
+            $(document).ajaxSend(function() {
+                $("#overlay").fadeIn(300);　
+            });            
+            
+            $.ajaxSetup({
+                headers: {
+                    "X-CSRFToken": '{{ csrf_token }}'
+                }
+            });
+
+            function getUnit(shop,machine,unit,page){
+
+                $.get("{% url 'getUnit' %}",{shop:shop,machine:machine,unit:unit,page:page},function(res){
+
+                    $("#overlay").fadeOut(300);
+                    $("tbody").empty();
+                    for(index in res['unit'])
+                    {
+                        id = res['unit'][index]['id'];
+                        ico = '<img src="{% static "assets/images/icon/unit.png" %}" width="30px">';
+                        shop = res['unit'][index]['shop'];
+                        machine = res['unit'][index]['machine'];
+                        unit = res['unit'][index]['unit'];
+                        ps = res['unit'][index]['ps'];
+                        url = res['unit'][index]['url'];
+                        regDT = new Date(res['unit'][index]['created_at']).toISOString().slice(0,10);
+        
+                        $("tbody").append('<tr class="search-items"><td id="'+id+'">'+ (parseInt(index) + 1 + (parseInt(page)-1)*100) +'</td><td>'+shop+'</td><td>'+machine+'</td><td><span class="usr-location" data-location="Boston, USA"><a href="'+url+'" target="_blank">'+ico+'&nbsp;&nbsp;&nbsp;'+unit+'</a></span></td><td><span class="usr-location" data-location="Boston, USA">'+ps+'</span></td><td><span class="usr-location" data-location="Boston, USA">'+regDT+'</span></td></tr>');
+                    }
+
+                    total_unit = parseInt(res['total_unit']);
+                    $(".total_unit").text(total_unit);
+                    totalPages = total_unit%100 == 0 ? total_unit/100 : total_unit/100 + 1;
+
+                    $('#pagination-demo').twbsPagination('destroy');
+                    $('#pagination-demo').twbsPagination({
+                        initiateStartPageClick: false,
+                        totalPages: totalPages,
+                        visiblePages: 5,
+                        startPage:page,
+                        next: '次へ',
+                        prev: '前へ',
+                        first:'<<',
+                        last:'>>',
+                        onPageClick: function (event, pg) {
+                            
+                            shop = $(".shop").val();
+                            machine = $(".machine").val();
+                            unit = $(".unit").val();
+                            page = pg;
+                            getUnit(shop,machine,unit,page);
+                        }                     
+                    });
+
+                },"json");
+            }
+
+            var shop = $(".shop").val();
+            var machine = $(".machine").val();
+            var unit = $(".unit").val();
+            var page = $(".page").val();
+
+            $('.shop').keydown(function(event) {
+
+                shop = $(this).val();
+                machine = $(".machine").val();
+                unit = $(".unit").val();
+                page = 1;
+
+                if (event.keyCode == 13) {
+                    getUnit(shop,machine,unit,page);
+                }
+            });
+
+            $('.machine').keydown(function(event) {
+
+                machine = $(this).val();
+                shop = $(".shop").val();
+                unit = $(".unit").val();
+                page = 1;
+
+                if (event.keyCode == 13) {
+                    getUnit(shop,machine,unit,page);
+                }
+            });
+
+            $('.unit').keydown(function(event) {
+
+                unit = $(this).val();
+                machine = $(".machine").val();
+                shop = $(".shop").val();
+                page = 1;
+
+                if (event.keyCode == 13) {
+                    getUnit(shop,machine,unit,page);
+                }
+            });
+
+
+
+            getUnit(shop,machine,unit,1);
+
+        });
+
+
+
+
+    </script>
+</body>
+
+</html>
